@@ -1,17 +1,24 @@
 import React from 'react'
-import Link from 'gatsby-link'
+import Img from 'gatsby-image'
+
+import '../style/index.scss'
 
 const IndexPage = ({ data }) => (
   <div className="Catalogue">
     {
-      data.site.siteMetadata.products.map(product => (
+      data.products.edges.map(({ node: product }) => (
         <div
           className="Catalogue__item"
-          key={product.slug}
+          key={product.id}
         >
-          <a href="#" className="Product">
+          <a href="#" className="Product snipcart-add-item"
+            data-item-id={product.id}
+            data-item-price={product.price}
+            data-item-image={product.image.url}
+            data-item-name={product.name}
+            data-item-url={`/`}>
             <div className="Product__image">
-              <img src={product.image} />
+              <Img sizes={product.image.sizes} />
             </div>
             <div className="Product__details">
               <div className="Product__name">
@@ -32,18 +39,22 @@ const IndexPage = ({ data }) => (
 )
 
 export default IndexPage
-
 export const query = graphql`
-  query CatalogueQuery {
-    site {
-      siteMetadata {
-        products {
-          slug
-          name
-          image
-          price
+query CatalogueQuery {
+  products: allDatoCmsProduct {
+    edges {
+      node {
+        id
+        name
+        price
+        image {
+          url
+          sizes(maxWidth: 300, imgixParams: { fm: "jpg" }) {
+            ...GatsbyDatoCmsSizes
+          }
         }
       }
     }
   }
+}
 `
